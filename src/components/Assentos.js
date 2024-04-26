@@ -1,3 +1,5 @@
+import styled from "styled-components"
+
 export default function Assentos(){
     return(
         <ContainerAssentos>
@@ -5,3 +7,7 @@ export default function Assentos(){
         </ContainerAssentos>
     )
 }
+
+const ContainerAssentos = styled.ul`
+
+`

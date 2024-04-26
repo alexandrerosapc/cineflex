@@ -15,11 +15,11 @@ function App() {
           element={<Filmes /> }
         />
         <Route
-          path="/sessoes/37"
+          path="/sessoes/:sessaoId"
           element={<Sessoes /> }
         />
         <Route
-          path="/assentos/240"
+          path="/assentos"
           element={<Assentos /> }
         />
         <Route

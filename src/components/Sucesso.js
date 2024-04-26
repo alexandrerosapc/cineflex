@@ -1,3 +1,4 @@
+import styled from "styled-components"
 export default function Sucesso(){
     return(
         <ContainerSucesso>
@@ -5,3 +6,7 @@ export default function Sucesso(){
         </ContainerSucesso>
     )
 }
+
+const ContainerSucesso = styled.div`
+
+`
