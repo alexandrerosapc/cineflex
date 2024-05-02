@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import calendario from "../assets/calendar.png"
 import logo from "../assets/clapperboard.png"
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Sessoes() {
     const { sessaoId } = useParams()
@@ -35,9 +36,11 @@ export default function Sessoes() {
                         </Linha>
                         <Horarios>
                             {sessao.showtimes.map(showtime => (
-                                <Horario key={showtime.id} >
-                                    {showtime.name}
-                                </Horario>
+                                <Link to={`/assentos/${showtime.id}`} key={showtime.id} >
+                                    <Horario key={showtime.id} >
+                                        {showtime.name}
+                                    </Horario>
+                                </Link>
                             ))}
                         </Horarios>
                     </Sessao>
@@ -96,7 +99,7 @@ const Sessao = styled.div`
     }
     span {
         color: #FFFFFF;
-        font-size: 24px;
+        font-size: 20px;
         text-align: center; /* Centralizando o texto */
         margin-bottom: 20px; /* Adicionando espaço abaixo do título */
     }
@@ -120,6 +123,9 @@ const Horarios = styled.ul`
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    a{
+        text-decoration: none;
+    }
 `
 
 const Horario = styled.div`

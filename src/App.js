@@ -19,7 +19,7 @@ function App() {
           element={<Sessoes /> }
         />
         <Route
-          path="/assentos"
+          path="/assentos/:sessaoId"
           element={<Assentos /> }
         />
         <Route
