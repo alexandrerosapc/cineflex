@@ -7,13 +7,22 @@ import ocupado from "../assets/user.png"
 export default function Assentos() {
     const [assentos, setAssentos] = useState([])
     const { sessaoId } = useParams()
-    useEffect(() => {
 
+    function selecionarAssento(name, livre) {
+        if (livre) {
+            setAssentos(prevAssentos =>
+                prevAssentos.map(assento =>
+                    assento.name === name ? { ...assento, selecionado: !assento.selecionado } : assento
+                )
+            );
+        }
+    }
+
+    useEffect(() => {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${sessaoId}/seats`)
-        promise.then(res => setAssentos(res.data.seats))
-        
+        promise.then(res => setAssentos(res.data.seats.map(assento => ({ ...assento, selecionado: false }))))
     }, [])
-    
+
     return (
         <Container>
             <ContainerAssentos>
@@ -22,9 +31,14 @@ export default function Assentos() {
                     {assentos.map(assento => (
                         <Assento
                             key={assento.id}
-                            ocupado={assento.isAvaible}
+                            livre={assento.isAvailable}
+                            selecionado={assento.selecionado}
+                            onClick={() => selecionarAssento(assento.name, assento.isAvailable)}
                         >
-                            <img />
+                            <img
+                                src={ocupado}
+                            />
+                            <p>{assento.name}</p>
                         </Assento>
                     ))}
                 </Lugares>
@@ -52,6 +66,7 @@ export default function Assentos() {
     )
 }
 
+
 const Container = styled.div`
     background-color: #212226;
     height: 100vh;
@@ -65,23 +80,35 @@ const ContainerAssentos = styled.div`
     background-color: #212226;
     p{
         text-align: center;
-        color: aliceblue;
+        color: white;
+        margin: 20px;
     }
 `
 
 const Lugares = styled.div`
     display: flex;
     flex-wrap: wrap;
-    background-color: ;
 `
 
 const Assento = styled.div`
     width: 26px;
     height: 26px;
     border-radius: 12px;
-    background-color: ${props => props.ocupado === true ? "blue" : "yellow"};
+    background-color: ${props => props.selecionado ? "#EE897F" : (props.livre ? "#9DB899" : "grey")};
     margin-right: 6px;
     margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    img {
+        width: 26px;
+        height: 26px;
+        display: ${props => props.livre ? "none" : "block"}; /* Alterado */
+    }
+    p {
+        display: ${props => !props.selecionado ? "none" : "block"};
+    }
 `
 
 const Linha = styled.div`
