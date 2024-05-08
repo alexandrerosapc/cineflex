@@ -3,10 +3,13 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import styled from "styled-components"
 import ocupado from "../assets/user.png"
+import ReactInputMask from "react-input-mask"
 
 export default function Assentos() {
     const [assentos, setAssentos] = useState([])
     const { sessaoId } = useParams()
+    const [name, setName] = useState("")
+    const [cpf, setCpf] = useState("")
 
     function selecionarAssento(name, livre) {
         if (livre) {
@@ -58,6 +61,34 @@ export default function Assentos() {
                     </Indisponivel>
                 </Legenda>
                 <InformacoesComprador>
+                    <p>
+                        Nome do comprador(a)
+                    </p>
+                    <form>
+                        <ReactInputMask
+                            id="name"
+                            type="text"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            required
+                        />
+                    </form>
+                    <p>
+                        CPF do comprador(a)
+                    </p>
+                    <form>
+                        <ReactInputMask
+                            id="cpf"
+                            mask={"999.999.999-99"}
+                            type="text"
+                            value={cpf}
+                            onChange={e => setCpf(e.target.value)}
+                            required
+                        />
+                    </form>
+                    <Reservar>
+                        Reservar assento(s)
+                    </Reservar>
                 </InformacoesComprador>
                 <FooterInformacoes>
                 </FooterInformacoes>
@@ -166,7 +197,32 @@ const Selecionado = styled.div`
 `
 
 const InformacoesComprador = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    p {
+        margin-left: 0px;
+        
+    }
+    input {
+        width: 338px;
+        height: 40px;
+        border-radius: 8px;
+        border: 1px solid ;
+    }
+`
 
+const  Reservar = styled.button`
+    margin: 15px 0;
+    width: 338px;
+    height: 42px;
+    background-color: #EE897F;
+    border-radius: 8px;
+    border: 1px solid #EE897F;
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
 `
 const FooterInformacoes = styled.div`
     height: 120px;
