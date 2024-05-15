@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import ocupado from "../assets/user.png"
 import ReactInputMask from "react-input-mask"
@@ -10,6 +10,10 @@ export default function Assentos() {
     const { sessaoId } = useParams()
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
+    const [validCpf, setValidCpf] = useState(false) // Estado para armazenar se o CPF é válido
+    const [assentosSelecionados, setAssentosSelecionados] = useState([]);
+    const navigate = useNavigate()
+
 
     function selecionarAssento(name, livre) {
         if (livre) {
@@ -18,13 +22,50 @@ export default function Assentos() {
                     assento.name === name ? { ...assento, selecionado: !assento.selecionado } : assento
                 )
             );
+            setAssentosSelecionados(prevAssentosSelecionados => {
+                const index = prevAssentosSelecionados.indexOf(name);
+                if (index !== -1) {
+                    // Se o assento já estiver selecionado, remova-o da lista
+                    return prevAssentosSelecionados.filter(item => item !== name);
+                } else {
+                    // Caso contrário, adicione-o à lista
+                    return [...prevAssentosSelecionados, name];
+                }
+            });
         }
     }
+
 
     useEffect(() => {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${sessaoId}/seats`)
         promise.then(res => setAssentos(res.data.seats.map(assento => ({ ...assento, selecionado: false }))))
     }, [])
+
+    // Função para manipular a mudança no campo de CPF
+    const handleCpfChange = (e) => {
+        const value = e.target.value.replace(/\D/g, ''); // Remove tudo exceto os dígitos
+        setCpf(value);
+        // Verifica se o CPF tem 11 dígitos para ativar o estado validCpf
+        setValidCpf(value.length === 11);
+    }
+
+    const reservarAssentos = (e) => {
+        e.preventDefault()
+        const dadosComprador = { name, cpf, assentosSelecionados }
+
+        /*
+        const url_post = "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many"
+        const promise = axios.post(url_post, dadosComprador)
+
+        promise.then(res => console.log(res.data))
+        */
+
+        console.log(dadosComprador)
+        setName('')
+        setCpf("")
+        navigate('/sucesso')
+    }
+
 
     return (
         <Container>
@@ -61,34 +102,36 @@ export default function Assentos() {
                     </Indisponivel>
                 </Legenda>
                 <InformacoesComprador>
-                    <p>
-                        Nome do comprador(a)
-                    </p>
-                    <form>
-                        <ReactInputMask
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            required
-                        />
+                    <form onSubmit={reservarAssentos}>
+                        <InputGroup>
+                            <Title htmlFor="name">
+                                Nome do comprador(a)
+                            </Title>
+                            <ReactInputMask
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={e => setName(e.target.value)}
+                                required
+                            />
+                        </InputGroup>
+                        <InputGroup>
+                            <Title htmlFor="cpf">
+                                CPF do comprador(a)
+                            </Title>
+                            <ReactInputMask
+                                id="cpf"
+                                mask={"999.999.999-99"}
+                                type="text"
+                                value={cpf}
+                                onChange={handleCpfChange}
+                                required
+                            />
+                        </InputGroup>
+                        <Reservar disabled={!validCpf}>
+                            Reservar assento(s)
+                        </Reservar>
                     </form>
-                    <p>
-                        CPF do comprador(a)
-                    </p>
-                    <form>
-                        <ReactInputMask
-                            id="cpf"
-                            mask={"999.999.999-99"}
-                            type="text"
-                            value={cpf}
-                            onChange={e => setCpf(e.target.value)}
-                            required
-                        />
-                    </form>
-                    <Reservar>
-                        Reservar assento(s)
-                    </Reservar>
                 </InformacoesComprador>
                 <FooterInformacoes>
                 </FooterInformacoes>
@@ -96,6 +139,7 @@ export default function Assentos() {
         </Container>
     )
 }
+
 
 
 const Container = styled.div`
@@ -213,7 +257,7 @@ const InformacoesComprador = styled.div`
     }
 `
 
-const  Reservar = styled.button`
+const Reservar = styled.button`
     margin: 15px 0;
     width: 338px;
     height: 42px;
@@ -240,4 +284,15 @@ const FooterInformacoes = styled.div`
         font-size: 20px;
         line-height: 33px;
     }
+`
+
+const InputGroup = styled.div`
+    input {
+        margin:  10px 0px;
+    }
+`
+
+const Title = styled.label`
+    margin: 3px;
+    color: white;
 `
