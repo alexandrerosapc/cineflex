@@ -55,6 +55,9 @@ const GlobalStyle = createGlobalStyle`
     body {
     font-family: 'Arvo', serif;
     }
+    a{
+        text-decoration: none;
+    }
 `
 
 export default GlobalStyle

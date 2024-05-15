@@ -1,11 +1,12 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Routes, Route, useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import ocupado from "../assets/user.png"
 import ReactInputMask from "react-input-mask"
 import clapperboard from "../assets/clapperboard.png";
 import calendar from "../assets/calendar (1).png"
+import Sucesso from "./Sucesso";
 
 export default function Assentos() {
     const [assentos, setAssentos] = useState([])
@@ -16,6 +17,8 @@ export default function Assentos() {
     const [assentosSelecionados, setAssentosSelecionados] = useState([]);
     const navigate = useNavigate()
     const [filmeEscolhido, setFilmeEscolhido] = useState({});
+    const [dataEscolhida, setDataEscolhida] = useState({})
+    const [horarioEscolhido, setHorarioEscolhido] = useState({})
 
 
     function selecionarAssento(name, livre) {
@@ -48,6 +51,8 @@ export default function Assentos() {
                 res.data.seats.map((assento) => ({ ...assento, selecionado: false }))
             );
             setFilmeEscolhido(res.data.movie);
+            setDataEscolhida(res.data.day);
+            setHorarioEscolhido(res.data)
         });
     }, [])
 
@@ -60,25 +65,30 @@ export default function Assentos() {
     }
 
     const reservarAssentos = (e) => {
-        e.preventDefault()
-        const dadosComprador = { name, cpf, assentosSelecionados }
+        e.preventDefault();
+        if (assentosSelecionados.length === 0) {
+            alert("Por favor, selecione pelo menos um assento.");
+            return; // Impede o envio do formulário se nenhum assento estiver selecionado
+        }
+        const dadosComprador = {
+            nomeFilme: filmeEscolhido.title,
+            dia: dataEscolhida.date,
+            horario: horarioEscolhido.name,
+            assentos: assentosSelecionados,
+            nomeComprador: name,
+            cpf: cpf
+        };
+        navigate("/sucesso", { state: dadosComprador });
+        setName('');
+        setCpf('');
+    };
 
-        /*
-        const url_post = "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many"
-        const promise = axios.post(url_post, dadosComprador)
-
-        promise.then(res => console.log(res.data))
-        */
-
-        console.log(dadosComprador)
-        setName('')
-        setCpf("")
-        navigate('/sucesso')
-    }
 
 
     return (
+
         <Container>
+
             <ContainerAssentos>
                 <p>Selecione o(s) assento(s)</p>
                 <Lugares>
@@ -146,12 +156,12 @@ export default function Assentos() {
                 <FooterInformacoes>
                     <div>
                         <NomeFilme>
-                            <ImagemClapperboard src={clapperboard} alt="clapperboard" />
+                            <ImagemRodape src={clapperboard} alt="clapperboard" />
                             <p>{filmeEscolhido.title}</p>
                         </NomeFilme>
                         <NomeFilme>
-                            <ImagemClapperboard src={calendar} alt="calendar" />
-                            <p>{filmeEscolhido.date}</p>
+                            <ImagemRodape src={calendar} alt="calendar" />
+                            <p>{dataEscolhida.date} às {horarioEscolhido.name}</p>
                         </NomeFilme>
                     </div>
                     <ImagemFilme
@@ -160,6 +170,12 @@ export default function Assentos() {
                     />
                 </FooterInformacoes>
             </ContainerAssentos>
+            <Routes>
+                <Route
+                    path="/sucesso"
+                    element={<Sucesso />}
+                />
+            </Routes>
         </Container>
     )
 }
@@ -326,7 +342,7 @@ const Title = styled.label`
     margin: 3px;
     color: white;
 `
-const ImagemClapperboard = styled.img`
+const ImagemRodape = styled.img`
   width: 25px;
   height: 25px;
 `;
