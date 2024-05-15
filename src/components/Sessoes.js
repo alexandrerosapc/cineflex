@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import axios from "axios";
 import { useEffect, useState } from "react";
-import calendario from "../assets/calendar.png"
+import calendario from "../assets/calendar (1).png"
 import logo from "../assets/clapperboard.png"
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -47,10 +47,12 @@ export default function Sessoes() {
                 ))}
             </ListaDeSessoes>
             <FooterSessao>
-                <ImagemLogo
-                    src={logo}
-                    alt="logo" />
-                <p>{cartaz.title}</p>
+                <div>
+                    <ImagemLogo
+                        src={logo}
+                        alt="logo" />
+                    <p>{cartaz.title}</p>
+                </div>
                 <ImagemFilme
                     src={cartaz.posterURL}
                     alt={cartaz.title}
@@ -144,17 +146,21 @@ const FooterSessao = styled.div`
     height: 120px;
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     background-color: #E0877E;
     position: fixed;
     bottom: 0;
     left: 0;
+    div {
+        display: flex;
+    }
     p {
         color: #2B2D36;
         font-weight: 700;
         font-size: 20px;
         line-height: 33px;
+        margin: 0 20px ;
     }
 `
 

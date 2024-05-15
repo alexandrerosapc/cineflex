@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import ocupado from "../assets/user.png"
 import ReactInputMask from "react-input-mask"
+import clapperboard from "../assets/clapperboard.png";
+import calendar from "../assets/calendar (1).png"
 
 export default function Assentos() {
     const [assentos, setAssentos] = useState([])
@@ -13,6 +15,7 @@ export default function Assentos() {
     const [validCpf, setValidCpf] = useState(false) // Estado para armazenar se o CPF é válido
     const [assentosSelecionados, setAssentosSelecionados] = useState([]);
     const navigate = useNavigate()
+    const [filmeEscolhido, setFilmeEscolhido] = useState({});
 
 
     function selecionarAssento(name, livre) {
@@ -37,8 +40,15 @@ export default function Assentos() {
 
 
     useEffect(() => {
-        const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${sessaoId}/seats`)
-        promise.then(res => setAssentos(res.data.seats.map(assento => ({ ...assento, selecionado: false }))))
+        const promise = axios.get(
+            `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${sessaoId}/seats`
+        );
+        promise.then((res) => {
+            setAssentos(
+                res.data.seats.map((assento) => ({ ...assento, selecionado: false }))
+            );
+            setFilmeEscolhido(res.data.movie);
+        });
     }, [])
 
     // Função para manipular a mudança no campo de CPF
@@ -134,6 +144,20 @@ export default function Assentos() {
                     </form>
                 </InformacoesComprador>
                 <FooterInformacoes>
+                    <div>
+                        <NomeFilme>
+                            <ImagemClapperboard src={clapperboard} alt="clapperboard" />
+                            <p>{filmeEscolhido.title}</p>
+                        </NomeFilme>
+                        <NomeFilme>
+                            <ImagemClapperboard src={calendar} alt="calendar" />
+                            <p>{filmeEscolhido.date}</p>
+                        </NomeFilme>
+                    </div>
+                    <ImagemFilme
+                        src={filmeEscolhido.posterURL}
+                        alt={filmeEscolhido.title}
+                    />
                 </FooterInformacoes>
             </ContainerAssentos>
         </Container>
@@ -261,6 +285,7 @@ const Reservar = styled.button`
     margin: 15px 0;
     width: 338px;
     height: 42px;
+    margin-bottom: 140px;
     background-color: #EE897F;
     border-radius: 8px;
     border: 1px solid #EE897F;
@@ -272,17 +297,22 @@ const FooterInformacoes = styled.div`
     height: 120px;
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     background-color: #E0877E;
     position: fixed;
     bottom: 0;
     left: 0;
+    div {
+        display: flex;
+        flex-direction: column;
+    }
     p {
         color: #2B2D36;
         font-weight: 700;
         font-size: 20px;
         line-height: 33px;
+        margin: 0 20px;
     }
 `
 
@@ -296,3 +326,17 @@ const Title = styled.label`
     margin: 3px;
     color: white;
 `
+const ImagemClapperboard = styled.img`
+  width: 25px;
+  height: 25px;
+`;
+
+const ImagemFilme = styled.img`
+  width: 65px;
+  height: 95px;
+`;
+
+const NomeFilme = styled.span`
+  display: flex;
+  margin: 10px;
+`;
